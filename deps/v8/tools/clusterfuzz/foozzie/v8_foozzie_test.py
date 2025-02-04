@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 import os
-import random
 import re
 import subprocess
 import sys
@@ -15,6 +14,7 @@ import v8_commands
 import v8_foozzie
 import v8_fuzz_config
 import v8_suppressions
+import secrets
 
 try:
   basestring
@@ -67,7 +67,7 @@ class ConfigTest(unittest.TestCase):
 
   def testConfig(self):
     """Smoke test how to choose experiments."""
-    config = v8_fuzz_config.Config('foo', random.Random(42))
+    config = v8_fuzz_config.Config('foo', secrets.SystemRandom().Random(42))
     experiments = [
       [25, 'ignition', 'jitless', 'd8'],
       [75, 'ignition', 'ignition', 'clang_x86/d8'],
