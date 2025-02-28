@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
+from security import safe_command
 
 ROOT_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 
@@ -46,7 +47,7 @@ def rebuild_addons(args):
   def node_gyp_rebuild(test_dir):
     print('Building addon in', test_dir)
     try:
-      process = subprocess.Popen([
+      process = safe_command.run(subprocess.Popen, [
           node_bin,
           node_gyp,
           'rebuild',

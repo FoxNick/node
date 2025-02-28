@@ -38,6 +38,7 @@ import time
 
 from enum import IntEnum
 from pathlib import Path
+from security import safe_command
 
 USE_PTY = "linux" in sys.platform
 if USE_PTY:
@@ -211,7 +212,7 @@ def detect_reclient_cert():
     if now < cached_time:
       return True
   cmd = ["gcertstatus", "-nocheck_ssh", "-format=simple"]
-  ret = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  ret = safe_command.run(subprocess.run, cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   if ret.returncode != 0:
     return False
   MARGIN = 300  # Request fresh cert if less than 5 mins remain.
@@ -302,7 +303,7 @@ def print_completions_and_exit():
 def _call(cmd, silent=False):
   if not silent:
     print(f"# {cmd}")
-  return subprocess.call(cmd, shell=True)
+  return safe_command.run(subprocess.call, cmd, shell=True)
 
 
 def _call_with_output_no_terminal(cmd):
@@ -314,7 +315,7 @@ def _call_with_output(cmd):
   # The following trickery is required so that the 'cmd' thinks it's running
   # in a real terminal, while this script gets to intercept its output.
   parent, child = pty.openpty()
-  p = subprocess.Popen(cmd, shell=True, stdin=child, stdout=child, stderr=child)
+  p = safe_command.run(subprocess.Popen, cmd, shell=True, stdin=child, stdout=child, stderr=child)
   os.close(child)
   output = []
   try:

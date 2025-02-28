@@ -12,6 +12,7 @@ import subprocess
 import shlex
 
 from collections.abc import MutableSet
+from security import safe_command
 
 
 # A minimal memoizing decorator. It'll blow up if the args aren't immutable,
@@ -448,8 +449,7 @@ def GetCrossCompilerPredefines():  # -> dict
         real_cmd = [*cmd, "-dM", "-E", "-x", "c", input]
         try:
             os.close(fd)
-            stdout = subprocess.run(
-                real_cmd, shell=True,
+            stdout = safe_command.run(subprocess.run, real_cmd, shell=True,
                 capture_output=True, check=True
             ).stdout
         finally:
@@ -457,8 +457,7 @@ def GetCrossCompilerPredefines():  # -> dict
     else:
         input = "/dev/null"
         real_cmd = [*cmd, "-dM", "-E", "-x", "c", input]
-        stdout = subprocess.run(
-            real_cmd, shell=False,
+        stdout = safe_command.run(subprocess.run, real_cmd, shell=False,
             capture_output=True, check=True
         ).stdout
 

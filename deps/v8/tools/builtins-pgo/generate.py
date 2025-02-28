@@ -7,6 +7,7 @@
 import subprocess
 import argparse
 from pathlib import Path
+from security import safe_command
 
 parser = argparse.ArgumentParser(
     description='Generate builtin PGO profiles. ' +
@@ -47,7 +48,7 @@ if args.target_cpu is None:
 
 def run(cmd, **kwargs):
   print(f"# CMD: {cmd} {kwargs}")
-  return subprocess.run(cmd, **kwargs, check=True)
+  return safe_command.run(subprocess.run, cmd, **kwargs, check=True)
 
 
 def build_d8(path, gn_args):

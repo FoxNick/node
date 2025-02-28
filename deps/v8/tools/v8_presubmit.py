@@ -28,6 +28,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import hashlib
+from security import safe_command
+
 md5er = hashlib.md5
 
 from contextlib import AbstractContextManager
@@ -91,7 +93,7 @@ import rdb_wrapper
 
 def CppLintWorker(command):
   try:
-    process = subprocess.Popen(command, stderr=subprocess.PIPE)
+    process = safe_command.run(subprocess.Popen, command, stderr=subprocess.PIPE)
     process.wait()
     out_lines = ""
     error_count = -1
@@ -121,7 +123,7 @@ def CppLintWorker(command):
 
 def TorqueLintWorker(command):
   try:
-    process = subprocess.Popen(command, stderr=subprocess.PIPE)
+    process = safe_command.run(subprocess.Popen, command, stderr=subprocess.PIPE)
     process.wait()
     out_lines = ""
     error_count = 0
@@ -149,7 +151,7 @@ def JSLintWorker(command):
       with open(file_name, "r") as file_handle:
         contents = file_handle.read()
 
-      process = subprocess.Popen(command, stdout=PIPE, stderr=subprocess.PIPE)
+      process = safe_command.run(subprocess.Popen, command, stdout=PIPE, stderr=subprocess.PIPE)
       output, err = process.communicate()
       rc = process.returncode
       if rc != 0:
@@ -768,7 +770,7 @@ class GCMoleProcessor(SourceFileProcessor):
 
 def CheckDeps(workspace):
   checkdeps_py = join(workspace, 'buildtools', 'checkdeps', 'checkdeps.py')
-  return subprocess.call([sys.executable, checkdeps_py, workspace]) == 0
+  return safe_command.run(subprocess.call, [sys.executable, checkdeps_py, workspace]) == 0
 
 
 def FindTests(workspace):

@@ -17,6 +17,7 @@ import tempfile
 import time
 
 import psutil
+from security import safe_command
 
 # ==============================================================================
 
@@ -228,7 +229,7 @@ def main():
       except Exception as e:
         log("ERROR running perf record: ", e)
     else:
-      process = subprocess.Popen(cmd, pass_fds=pass_fds)
+      process = safe_command.run(subprocess.Popen, cmd, pass_fds=pass_fds)
       if not wait_for_process_timeout(process):
         log(f"QUITING d8 processes after {options.timeout}s timeout")
       current_process = psutil.Process()

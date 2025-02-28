@@ -4,6 +4,7 @@
 
 import pathlib
 from subprocess import STDOUT, PIPE, Popen
+from security import safe_command
 
 # This line is 'magic' in that git-cl looks for it to decide whether to
 # use Python3 instead of Python2 when running the code in this file.
@@ -29,7 +30,7 @@ def _CheckLint(input_api, output_api):
       staging_path / 'features.txt',
       staging_path,
   ]
-  proc = Popen(command, cwd=workdir, stderr=STDOUT, stdout=PIPE)
+  proc = safe_command.run(Popen, command, cwd=workdir, stderr=STDOUT, stdout=PIPE)
   output, exit_code = proc.communicate()[0], proc.returncode
   if exit_code == 0:
     return []

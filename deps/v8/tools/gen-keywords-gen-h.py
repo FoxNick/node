@@ -11,6 +11,7 @@ import re
 import math
 from pathlib import Path
 from typing import List, Union
+from security import safe_command
 
 INPUT_PATH = Path("src/parsing/keywords.txt")
 OUTPUT_PATH = Path("src/parsing/keywords-gen.h")
@@ -24,7 +25,7 @@ def next_power_of_2(x):
 
 
 def call_with_input(cmd: List[Union[str, Path]], input_string: str = "") -> str:
-  p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+  p = safe_command.run(subprocess.Popen, cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
   stdout, _ = p.communicate(input_string.encode())
   retcode = p.wait()
   if retcode != 0:

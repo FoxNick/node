@@ -18,6 +18,7 @@ from ..local.android import (Driver, CommandFailedException, TimeoutException)
 from ..local.pool import AbortException
 from ..objects import output
 from .process_utils import ProcessStats, EMPTY_PROCESS_LOGGER, PROCESS_LOGGER
+from security import safe_command
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -155,8 +156,7 @@ class BaseCommand(object):
 
   def _start_process(self):
     with self.log_errors():
-      return subprocess.Popen(
-        args=self._get_popen_args(),
+      return safe_command.run(subprocess.Popen, args=self._get_popen_args(),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=self._get_env(),
@@ -223,8 +223,7 @@ class PosixCommand(DesktopCommand):
         return "'%s'" % arg.replace("'", "'\"'\"'")
       return arg
     try:
-      return subprocess.Popen(
-        args=' '.join(map(wrapped, self._get_popen_args())),
+      return safe_command.run(subprocess.Popen, args=' '.join(map(wrapped, self._get_popen_args())),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=self._get_env(),
@@ -249,8 +248,7 @@ class PosixCommand(DesktopCommand):
 
 def taskkill_windows(process, verbose=False, force=True):
   force_flag = ' /F' if force else ''
-  tk = subprocess.Popen(
-      'taskkill /T%s /PID %d' % (force_flag, process.pid),
+  tk = safe_command.run(subprocess.Popen, 'taskkill /T%s /PID %d' % (force_flag, process.pid),
       stdout=subprocess.PIPE,
       stderr=subprocess.PIPE,
   )
@@ -295,8 +293,7 @@ class IOSCommand(BaseCommand):
 
   def _start_process(self):
     try:
-      return subprocess.Popen(
-          args=self._get_popen_args(),
+      return safe_command.run(subprocess.Popen, args=self._get_popen_args(),
           stdout=subprocess.PIPE,
           stderr=subprocess.PIPE,
           env=self._get_env(),

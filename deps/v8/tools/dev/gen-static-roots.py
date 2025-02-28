@@ -14,6 +14,7 @@ import platform
 import re
 import sys
 from pathlib import Path
+from security import safe_command
 
 # List of all supported build configurations for static roots
 
@@ -57,7 +58,7 @@ args = parser.parse_args()
 # Some helpers
 def run(cmd, **kwargs):
   print(f"# CMD: {cmd}")
-  return subprocess.run(cmd, **kwargs, check=True)
+  return safe_command.run(subprocess.run, cmd, **kwargs, check=True)
 
 
 def machine_target():

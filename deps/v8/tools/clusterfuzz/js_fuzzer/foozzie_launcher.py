@@ -16,6 +16,7 @@ import re
 import shutil
 import subprocess
 import sys
+from security import safe_command
 
 def find_harness_code(args):
   for arg in args:
@@ -43,6 +44,6 @@ if __name__ == '__main__':
   if not use_python3 and shutil.which('python2'):
     python_exe = 'python2'
 
-  process = subprocess.Popen([python_exe] + args)
+  process = safe_command.run(subprocess.Popen, [python_exe] + args)
   process.communicate()
   sys.exit(process.returncode)
